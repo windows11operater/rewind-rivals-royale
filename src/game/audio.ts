@@ -16,7 +16,7 @@ export function audio() {
   if (!ctx) {
     ctx = new AudioContext();
     master = ctx.createGain();
-    master.gain.value = 0.5;
+    master.gain.value = 0.5 * vol.master * vol.sfx;
     master.connect(ctx.destination);
     // A short, reusable noise buffer; avoids allocating a large buffer for every sound.
     noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
@@ -42,6 +42,9 @@ function loadSample(name: string, url: string) {
     .then((buffer) => { samples[name] = buffer; })
     .catch(() => { loading[name] = false; });
 }
+
+/** Main x Sound Effects volume from the settings menu. */
+export function applyVolume() { if (master) master.gain.value = 0.5 * vol.master * vol.sfx; }
 
 export function preloadSamples() {
   loadSample("shotgun", shotgunAsset.url);
@@ -162,7 +165,7 @@ export const sfx = {
       const src = c.createBufferSource(), g = c.createGain();
       src.buffer = buffer;
       src.playbackRate.value = (surface === "metal" ? 1.15 : surface === "wood" ? 1.05 : 1) * (0.96 + Math.random() * 0.08);
-      g.gain.value = 0.9 * v * vol.master;
+      g.gain.value = 0.9 * v;
       src.connect(g); g.connect(master);
       src.start(c.currentTime, Math.max(0, at), 0.24);
       if (surface === "metal" || surface === "wood") stepSounds[surface]();
