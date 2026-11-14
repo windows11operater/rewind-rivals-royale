@@ -1,6 +1,11 @@
 // @ts-nocheck -- Web Audio graph is intentionally kept lightweight for mobile browsers.
 // Recorded Tactical Shotgun sample + synthesized, event-driven gameplay effects.
-import shotgunAsset from "@/assets/sounds/tac_shotgun.mp3.asset.json";
+import shotgunAsset from "@/assets/sounds/tac_shotgun_v2.mp3.asset.json";
+import stepsAsset from "@/assets/sounds/footsteps.mp3.asset.json";
+/** start times (s) of each footfall in the user's footstep recording */
+const STEP_AT = [1.15, 1.44, 1.68, 1.95, 2.18, 2.46, 2.68, 2.98, 3.19, 3.49, 3.72, 3.99, 4.22, 4.48, 4.72, 5.03, 5.22, 5.53, 5.76, 6.03, 6.26, 6.53, 6.76, 7.06, 7.27, 7.57, 7.8, 8.07];
+let stepI = 0;
+export const vol = { master: 1, sfx: 1, steps: 1 };
 
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
@@ -11,7 +16,7 @@ export function audio() {
   if (!ctx) {
     ctx = new AudioContext();
     master = ctx.createGain();
-    master.gain.value = 0.5;
+    master.gain.value = 0.5 * vol.master * vol.sfx;
     master.connect(ctx.destination);
     // A short, reusable noise buffer; avoids allocating a large buffer for every sound.
     noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
@@ -38,8 +43,12 @@ function loadSample(name: string, url: string) {
     .catch(() => { loading[name] = false; });
 }
 
+/** Main x Sound Effects volume from the settings menu. */
+export function applyVolume() { if (master) master.gain.value = 0.5 * vol.master * vol.sfx; }
+
 export function preloadSamples() {
   loadSample("shotgun", shotgunAsset.url);
+  loadSample("steps", stepsAsset.url);
 }
 
 function playSample(name: string, volume: number, rate = 1) {
@@ -147,7 +156,24 @@ export const sfx = {
   build() { noise(0.15, 800, 2, 0.4); tone(300, 0.1, 0.2, "square", 0.02, 150); },
   heal() { tone(440, 0.2, 0.1, "sine"); tone(660, 0.3, 0.1, "sine", 0.15); },
   shield() { tone(600, 0.6, 0.12, "sine", 0, 1400); },
-  step(surface: FootstepSurface = "grass") { stepSounds[surface](); },
+  step(surface: FootstepSurface = "grass", volume = 1) {
+    const v = volume * vol.steps;
+    if (v < 0.02) return;
+    const c = audio(), buffer = samples.steps;
+    if (c && master && buffer) {
+      const at = STEP_AT[stepI++ % STEP_AT.length] - 0.02;
+      const src = c.createBufferSource(), g = c.createGain();
+      src.buffer = buffer;
+      src.playbackRate.value = (surface === "metal" ? 1.15 : surface === "wood" ? 1.05 : 1) * (0.96 + Math.random() * 0.08);
+      g.gain.value = 0.9 * v;
+      src.connect(g); g.connect(master);
+      src.start(c.currentTime, Math.max(0, at), 0.24);
+      if (surface === "metal" || surface === "wood") stepSounds[surface]();
+      return;
+    }
+    preloadSamples();
+    stepSounds[surface]();
+  },
   land() { noise(0.16, 500, 0.7, 0.22, "lowpass"); tone(85, 0.12, 0.18, "sine", 0, 55); },
   wind(volume = 0.12) { if (volume > 0.01) noise(0.65, 360, 0.25, volume, "lowpass"); },
   horn() { tone(330, 0.5, 0.2, "sawtooth"); tone(415, 0.5, 0.15, "sawtooth"); tone(330, 0.5, 0.2, "sawtooth", 0.6); tone(415, 0.5, 0.15, "sawtooth", 0.6); },
