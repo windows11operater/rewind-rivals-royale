@@ -1,0 +1,20 @@
+# Roadmap
+- [x] Device gate (PC / Mobile) before menu; mobile needs a controller; change device in settings
+- [x] Controller input in lobby and match
+- [x] Match HUD redesign (compass, squad bars, minimap row, vitals, mats, quickbar, build bar, build prompts)
+- [x] Building: wall / floor / ramp / roof with wood/brick/metal, rotate, edit
+- [x] No blocking "click to play" overlay
+- [x] Battle Bus under hot air balloon with burner + thrusters
+- [x] POIs on the island's towns; every building enterable (doors, floors, stairs, chests/loot, destructible walls)
+- [x] Island ground: smooth heightfield textured with the island's top-down map (replaces the distorted mesh)
+- [x] 8 GLB skins (Jonesy, Skull Trooper, Ghoul Trooper, Merry Marauder, Festive Frostfighter, Battlefront Sentinel, Renegade Raider, Red-Top Knight) replace all shape figures: Locker (all owned, equip now), Item Shop, Lobby, matches
+- [x] Skin animations: idle, run, jump, harvest, shoot (auto-rigged at load)
+- [x] 4 weapon models (M4, Revolver, Tactical SMG, Tactical Shotgun) in hand and as floor loot
+- [x] Lobby: outfits load faster
+- [x] Lobby: cooler, better-looking menus
+- [x] Duos/Squads with Fill: no random teammate standing next to you in the lobby
+- [x] Remove the pickaxe from lobby characters
+- [x] Fix the distorted island so it looks like the real map
+- [x] Weapons: only M4, Revolver, Tactical SMG, Tactical Shotgun (remove sniper and unmodeled guns)
+- [x] Tac Shotgun uses the user's sound file
+- [x] Replicate clip animations/graphics: overhead pickaxe swing, weak-point harvest circle, object HP bar, wood popups, hit sparks, shotgun muzzle flash + ammo counter
