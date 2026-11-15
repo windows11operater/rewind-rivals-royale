@@ -18,9 +18,14 @@ describe("match setup", () => {
     expect(fresh(2).players.length).toBe(30);
     expect(fresh(4).players.length).toBe(32);
   });
-  it("Tilted Towers, Pleasant Park and Salty Springs are on the map", () => {
-    const names = fresh().pois.map((p) => p.name);
-    expect(names).toEqual(expect.arrayContaining(["Tilted Towers", "Pleasant Park", "Salty Springs"]));
+  it("only Tilted Towers, Retail Row and Dusty Depot are on the map", () => {
+    const names = fresh().pois.map((p) => p.name).sort();
+    expect(names).toEqual(["Dusty Depot", "Retail Row", "Tilted Towers"]);
+  });
+  it("the three towns are far apart with open ground between them", () => {
+    const ps = fresh().pois;
+    for (let i = 0; i < ps.length; i++) for (let j = i + 1; j < ps.length; j++)
+      expect(Math.hypot(ps[i].x - ps[j].x, ps[i].z - ps[j].z)).toBeGreaterThan(150);
   });
 });
 
